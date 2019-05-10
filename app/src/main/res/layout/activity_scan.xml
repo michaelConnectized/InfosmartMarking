@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	style="@style/AppTheme"
+	tools:context=".ScanActivity">
+
+
+
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical" >
+
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="match_parent"
+			android:layout_height="30dp"
+			android:gravity="center"
+			android:paddingLeft="16dp"
+			android:paddingRight="16dp"
+			android:orientation="horizontal" >
+			<TextView
+				android:id="@+id/stv_project"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingRight="8dp"
+				android:text="Project"/>
+
+			<TextView
+				android:id="@+id/tv_project"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Project Name" />
+		</LinearLayout>
+
+		<View android:background="#000000"
+			android:layout_width = "match_parent"
+			android:layout_height="1dp"/>
+
+		<!--Row 3-->
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingLeft="16dp"
+			android:paddingRight="8dp"
+			android:orientation="horizontal" >
+
+			<LinearLayout
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="vertical">
+
+				<LinearLayout
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal">
+					<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:paddingRight="8dp"
+						android:text="AT"/>
+
+					<TextView
+						android:id="@+id/tv_at1"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:paddingRight="8dp"
+						android:text="block" />
+
+					<TextView
+						android:id="@+id/tv_at2"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:paddingRight="8dp"
+						android:text="floor" />
+
+					<TextView
+						android:id="@+id/tv_at3"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:paddingRight="8dp"
+						android:text="room" />
+
+					<TextView
+						android:id="@+id/tv_at4"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:paddingRight="8dp"
+						android:text="area" />
+				</LinearLayout>
+				<LinearLayout
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal">
+					<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:paddingRight="8dp"
+						android:text="Scan Filter: "/>
+
+					<TextView
+						android:id="@+id/tv_filter_value"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:paddingRight="8dp"
+						android:text="\?" />
+
+				</LinearLayout>
+				<LinearLayout
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal">
+					<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:paddingRight="8dp"
+						android:text="Scan time: "/>
+
+					<TextView
+						android:id="@+id/tv_scan_time"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:paddingRight="8dp"
+						android:text="\?" />
+
+				</LinearLayout>
+			</LinearLayout>
+
+
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:paddingLeft="4dp"
+				android:weightSum="15"
+				android:orientation="horizontal">
+				<Button
+					android:id="@+id/btn_filter_list"
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_gravity="center"
+					android:layout_weight="8"
+					android:onClick="onClickBtnFilterLMList"
+					android:text="Filtered\nLM" />
+				<Button
+					android:id="@+id/btn_scan"
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_gravity="center"
+					android:onClick="onClickBtnScan"
+					android:layout_weight="7"
+					android:text="Start" />
+			</LinearLayout>
+		</LinearLayout>
+		<View android:background="#000000"
+			android:layout_width = "match_parent"
+			android:layout_height="1dp"/>
+		<!--Row 5-->
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingLeft="8dp"
+			android:paddingRight="8dp"
+			android:orientation="vertical">
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Found:" />
+
+			<RelativeLayout
+				android:layout_width="match_parent"
+				android:layout_height="match_parent">
+
+				<ScrollView
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_above="@+id/layout_btn_assign">
+					<LinearLayout
+						android:id="@+id/subScroll"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:orientation="vertical">
+					</LinearLayout>
+				</ScrollView>
+
+				<!--Row 6-->
+				<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+					android:id="@+id/layout_btn_assign"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+
+					android:padding="20dp"
+					android:gravity="right"
+					android:layout_alignParentBottom="true"	>
+					<Button
+						android:id="@+id/btn_connect"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:onClick="onClickBtnConnect"
+						android:visibility="gone"
+						android:text="Connect" />
+					<Button
+						android:id="@+id/btn_assign"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:onClick="onClickBtnAssign"
+						android:text="Assign" />
+				</LinearLayout>
+			</RelativeLayout>
+		</LinearLayout>
+		<!--Row 7-->
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingLeft="8dp"
+			android:paddingRight="8dp"
+			android:orientation="vertical" >
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingRight="8dp"
+				android:text="Address: "/>
+
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:paddingTop="8dp"
+				android:orientation="horizontal" >
+				<TextView
+					android:id="@+id/tv_addr1"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="8dp"
+					android:text="啟東樓" />
+
+				<TextView
+					android:id="@+id/tv_addr2"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="8dp"
+					android:text="第51座" />
+
+				<TextView
+					android:id="@+id/tv_addr3"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="8dp"
+					android:text="B2 -  42/F " />
+
+				<TextView
+					android:id="@+id/tv_addr4"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="8dp"
+					android:text="01 - 16,  垃圾房，電錶房，水錶房，低壓機電房，儲物室" />
+			</LinearLayout>
+		</LinearLayout>
+		<!--Row 8-->
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingLeft="8dp"
+			android:paddingRight="8dp"
+			android:orientation="vertical" >
+			<TextView
+				android:id="@+id/stv_at"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingRight="8dp"
+				android:text="Assign with: "/>
+
+			<!-- record1 -->
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal" >
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="8dp"
+					android:text="[1]"/>
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="8dp"
+					android:text="UUID" />
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="8dp"
+					android:text="RSSI" />
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="8dp"
+					android:text="Battery_Power" />
+
+			</LinearLayout>
+			<!-- record2 -->
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal" >
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="8dp"
+					android:text="[2]"/>
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="8dp"
+					android:text="UUID" />
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="8dp"
+					android:text="RSSI" />
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="8dp"
+					android:text="Battery_Power" />
+			</LinearLayout>
+		</LinearLayout>
+		<!--Row 9-->
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingLeft="8dp"
+			android:paddingRight="8dp"
+			android:gravity="right"
+			android:orientation="vertical"	>
+			<Button
+				android:id="@+id/btn_confirm"
+				android:layout_width="wrap_content"
+				android:layout_height="80px"
+				android:onClick="onClickBtnAssign"
+				android:text="Confirm" />
+		</LinearLayout>
+	</LinearLayout>
+
+
+
+</android.support.constraint.ConstraintLayout>
