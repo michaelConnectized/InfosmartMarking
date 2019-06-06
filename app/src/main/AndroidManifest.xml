@@ -63,6 +63,14 @@
                 android:name="jobId"
                 android:value="1799803768" />
         </service>
+        <service android:name="com.minew.beaconplus.sdk.ConnectService"/>
+        <service android:name="com.minew.beaconplus.sdk.services.DfuService"/>
+
+        <receiver android:name="com.minew.beaconplus.sdk.receivers.BluetoothChangedReceiver">
+            <intent-filter>
+                <action android:name="android.bluetooth.adapter.action.STATE_CHANGED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 

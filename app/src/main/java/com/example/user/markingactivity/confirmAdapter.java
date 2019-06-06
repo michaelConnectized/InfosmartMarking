@@ -1,5 +1,6 @@
 package com.example.user.markingactivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.opengl.Visibility;
 import android.view.View;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 
 public class confirmAdapter extends bleAdapter {
 
-    public confirmAdapter(Context ctx, ArrayList<mDevice> mDevs) {
+    public confirmAdapter(Activity ctx, ArrayList<mDevice> mDevs) {
         super(ctx, mDevs);
     }
     @Override

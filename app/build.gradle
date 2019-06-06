@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.example.user.markingactivity"
-        minSdkVersion 16
+        minSdkVersion 18
         targetSdkVersion 28
         versionCode 8
         versionName "1.8"

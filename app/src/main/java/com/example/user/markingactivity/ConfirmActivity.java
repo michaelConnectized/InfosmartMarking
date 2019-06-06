@@ -109,7 +109,7 @@ public class ConfirmActivity extends AppCompatActivity {
         tv_at3.setText(addresses[2]);
         tv_at4.setText(addresses[3]);
 
-        lv.setAdapter(new confirmAdapter(getApplicationContext(), mDevs));
+        lv.setAdapter(new confirmAdapter(this, mDevs));
     }
 
     private void init() {

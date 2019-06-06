@@ -151,7 +151,7 @@ public class ScanActivity extends AppCompatActivity {
 
             mDev.clear();
             bleA.getmDevCheckedIndex().clear();
-            bleA = new bleAdapter(getApplicationContext(), mDev);
+            bleA = new bleAdapter(this, mDev);
             bleA.refleshLayout(ctx, findViewById(R.id.subScroll),false);
             mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             AsyncTask.execute(new Runnable() {
@@ -293,7 +293,7 @@ public class ScanActivity extends AppCompatActivity {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
-        bleA = new bleAdapter(getApplicationContext(), mDev);
+        bleA = new bleAdapter(this, mDev);
         bleA.setmDevCheckedIndex(new ArrayList<Boolean>());
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_REQUEST_CONSTANT);

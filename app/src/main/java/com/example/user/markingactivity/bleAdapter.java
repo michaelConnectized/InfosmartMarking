@@ -1,12 +1,10 @@
 package com.example.user.markingactivity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewCompat;
@@ -28,14 +26,20 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beaconplusdemo.BeaconPlusManager;
+import com.beaconplusdemo.Landmark;
+
 import java.util.ArrayList;
 
 public class bleAdapter extends BaseAdapter {
+    private Activity activity;
     private Context ctx;
     private ArrayList<mDevice> mDevs;
     private ArrayList<Integer> viewIDs;
     private int count;
     private ArrayList<Boolean> mDevCheckedIndex;
+    final ProgressDialog progressDialog;
+    private BeaconPlusManager beaconPlusManager;
 
     CheckBox chk_check;
 
@@ -45,11 +49,14 @@ public class bleAdapter extends BaseAdapter {
 
     SharedPreferences sp;
 
-    public bleAdapter(Context ctx, ArrayList<mDevice> mDevs) {
-        this.ctx = ctx;
+    public bleAdapter(Activity activity, ArrayList<mDevice> mDevs) {
+        this.activity = activity;
+        this.ctx = activity;
         this.mDevs = mDevs;
         viewIDs = new ArrayList<Integer>();
 
+
+        progressDialog = new ProgressDialog(activity);
         mDevCheckedIndex = new ArrayList<Boolean>();
     }
     @Override
@@ -236,24 +243,40 @@ public class bleAdapter extends BaseAdapter {
                     dlgAlert.setView(outerLayout);
 
                     dlgAlert.setTitle("Edit Tx Power");
-                    dlgAlert.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            //Toast.makeText(ctx, et_r1.getText()+", "+et_r2.getText()+", "+et_r3.getText(), Toast.LENGTH_LONG).show();
-                            try {
-                                Intent launchGoogleChrome = ctx.getPackageManager().getLaunchIntentForPackage("com.minew.beaconplusdemo");
-                                //launchGoogleChrome.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                launchGoogleChrome.putExtra("Mac",et_r1.getText().toString());
-                                launchGoogleChrome.putExtra("Txpower",et_r2.getText().toString());
-                                launchGoogleChrome.putExtra("Password",et_r3.getText().toString());
 
-                                PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString("beacon_password", et_r3.getText().toString()).commit();
+                    dlgAlert.setPositiveButton("Confirm", (dialog, id) -> {
+                        try {
+                            //TODO EDIT TX POWER
 
-                                ctx.startActivity(launchGoogleChrome);
-                            } catch (Exception e) {
-                                Toast.makeText(ctx, "Sorry, there are some errors occurred.", Toast.LENGTH_LONG).show();
-                            }
+                            Landmark lm = new Landmark(et_r1.getText().toString(), et_r2.getText().toString(), et_r3.getText().toString());
+                            beaconPlusManager = BeaconPlusManager.EditTxPwrManager(activity, lm);
+                            beaconPlusManager.startBeaconScan();
+
+                            progressDialog.setMessage("Connecting to \n"+beaconPlusManager.getLandmark().getMacAddr()+"...");
+                            progressDialog.setIndeterminate(true);
+
+                            progressDialog.show();
+                            beaconPlusManager.setOnConnectionStatusChangedListener(status -> {
+                                progressDialog.dismiss();
+
+                                switch (status) {
+                                    case CONNECT_FAIL:
+                                        showConnectionFailedDialog();
+                                        break;
+                                    case CHANGE_SUCCESS:
+                                        showChangedSuccessfulDialog();
+                                        sp.edit().putString("beacon_password", beaconPlusManager.getLandmark().getPwd()).commit();
+                                        break;
+                                    case PASSWORD_VALID_TIMEOUT:
+                                        showPasswordValidTimeoutDialog();
+                                        break;
+                                }
+                            });
+                        } catch (Exception e) {
+                            Toast.makeText(ctx, "Sorry, there are some errors occurred.", Toast.LENGTH_LONG).show();
                         }
                     });
+
                     dlgAlert.setNegativeButton("Cancel", null);
                     dlgAlert.setCancelable(true);
                     dlgAlert.create().show();
@@ -265,6 +288,48 @@ public class bleAdapter extends BaseAdapter {
             count++;
         }
         mScrollView.addView(newLinearView);
+    }
+
+    private void showPasswordValidTimeoutDialog() {
+        AlertDialog.Builder localDialog = new AlertDialog.Builder(ctx);
+        localDialog.setTitle("Password Validation Timeout");
+        localDialog.setMessage("Would you like to connect again?");
+        localDialog.setPositiveButton("Yes", (dialog, id) -> {
+            progressDialog.show();
+            beaconPlusManager.tryConnect();
+            dialog.dismiss();
+        });
+        localDialog.setNegativeButton("No", (dialog, id) -> {
+           dialog.dismiss();
+        });
+        localDialog.show();
+    }
+
+    private void showConnectionFailedDialog() {
+        AlertDialog.Builder localDialog = new AlertDialog.Builder(ctx);
+        localDialog.setTitle("Connection Failed!");
+        localDialog.setMessage("Would you like to connect again?");
+        localDialog.setPositiveButton("Yes", (dialog, id) -> {
+            progressDialog.show();
+            beaconPlusManager.tryConnect();
+            dialog.dismiss();
+        });
+        localDialog.setNegativeButton("No", (dialog, id) -> {
+            dialog.dismiss();
+        });
+        localDialog.show();
+    }
+
+    private void showChangedSuccessfulDialog() {
+        try {
+            AlertDialog.Builder localDialog = new AlertDialog.Builder(activity.getApplicationContext());
+            localDialog.setMessage("Change Successful!");
+            localDialog.setNeutralButton("Yes", (dialog, id) -> {
+                dialog.dismiss();
+            });
+            localDialog.show();
+
+        } catch (Exception e) {};
     }
 
     public ArrayList<Boolean> getmDevCheckedIndex() {
