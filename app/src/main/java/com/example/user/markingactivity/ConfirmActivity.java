@@ -75,41 +75,50 @@ public class ConfirmActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirm);
-        init();
+        tryOnCreateEvent();
+    }
 
-        server_mode = preferences.getBoolean("server_mode", true);
+    private void tryOnCreateEvent() {
+        try {
+            init();
 
-        Intent intent = getIntent();
-        project_id = intent.getIntExtra("project_id", 0);
-        addresses = intent.getStringArrayExtra("addresses");
-        mDevCount = intent.getIntExtra("mDevCount", 0);
-        address_id = intent.getStringExtra("address_id");
-        address_row_num = intent.getIntExtra("row_num", 0);
-        for (int i=0; i<mDevCount; i++) {
-            if ( intent.getSerializableExtra("mDevs"+i)!=null)
-                mDevs.add((mDevice) intent.getSerializableExtra("mDevs"+i));
+            server_mode = preferences.getBoolean("server_mode", true);
+
+            Intent intent = getIntent();
+            project_id = intent.getIntExtra("project_id", 0);
+            addresses = intent.getStringArrayExtra("addresses");
+            mDevCount = intent.getIntExtra("mDevCount", 0);
+            address_id = intent.getStringExtra("address_id");
+            address_row_num = intent.getIntExtra("row_num", 0);
+            for (int i=0; i<mDevCount; i++) {
+                if ( intent.getSerializableExtra("mDevs"+i)!=null)
+                    mDevs.add((mDevice) intent.getSerializableExtra("mDevs"+i));
+            }
+
+            if (server_mode) {
+                locs.setProjectsFromServer();
+            } else {
+                locs.setProjectsFromFiles(ExcelPath.homepage, "addr");
+            }
+
+            project_name = locs.getProject(project_id).getName();
+
+            fileExtension = "";
+            if (!project_name.equals("Unnamed")) {
+                fileExtension = "-"+project_name;
+            }
+
+            tv_project.setText(project_name);
+            tv_at1.setText(addresses[0]);
+            tv_at2.setText(addresses[1]);
+            tv_at3.setText(addresses[2]);
+            tv_at4.setText(addresses[3]);
+
+            lv.setAdapter(new confirmAdapter(this, mDevs));
+        } catch (Exception e) {
+            Log.e(tag, e.toString());
+            finishActivity();
         }
-
-        if (server_mode) {
-            locs.setProjectsFromServer();
-        } else {
-            locs.setProjectsFromFiles(ExcelPath.homepage, "addr");
-        }
-
-        project_name = locs.getProject(project_id).getName();
-
-        fileExtension = "";
-        if (!project_name.equals("Unnamed")) {
-            fileExtension = "-"+project_name;
-        }
-
-        tv_project.setText(project_name);
-        tv_at1.setText(addresses[0]);
-        tv_at2.setText(addresses[1]);
-        tv_at3.setText(addresses[2]);
-        tv_at4.setText(addresses[3]);
-
-        lv.setAdapter(new confirmAdapter(this, mDevs));
     }
 
     private void init() {

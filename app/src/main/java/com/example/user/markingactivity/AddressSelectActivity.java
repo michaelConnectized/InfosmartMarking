@@ -94,52 +94,60 @@ public class AddressSelectActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_address_select);
-        init();
+        tryOnCreateEvent();
+    }
 
-        server_mode = preferences.getBoolean("server_mode", true);
+    private void tryOnCreateEvent() {
+        try {
+            init();
+            server_mode = preferences.getBoolean("server_mode", true);
 
-        Intent intent = getIntent();
-        project_id = intent.getIntExtra("project_id", 0);
+            Intent intent = getIntent();
+            project_id = intent.getIntExtra("project_id", 0);
 
-        if (server_mode) {
-            locs.setProjectsFromServer();
-            filteredLocs.setProjectsFromServer();
+            if (server_mode) {
+                locs.setProjectsFromServer();
+                filteredLocs.setProjectsFromServer();
 
-            project_name = locs.getProject(project_id).getName();
-            getLandmarksFromServer();
-            getAddressFromServer();
-        } else {
-            locs.setProjectsFromFiles(ExcelPath.homepage, "addr");
-            filteredLocs.setProjectsFromFiles(ExcelPath.homepage, "addr");
+                project_name = locs.getProject(project_id).getName();
+                getLandmarksFromServer();
+                getAddressFromServer();
+            } else {
+                locs.setProjectsFromFiles(ExcelPath.homepage, "addr");
+                filteredLocs.setProjectsFromFiles(ExcelPath.homepage, "addr");
 
-            project_name = locs.getProject(project_id).getName();
+                project_name = locs.getProject(project_id).getName();
 
-            if (!project_name.equals("Unnamed")) {
-                fileExtension = "-"+project_name;
+                if (!project_name.equals("Unnamed")) {
+                    fileExtension = "-"+project_name;
+                }
+                getAddressFromXLSX(locs, mStatusList.ADDRESS_STATUS_INCLUDE_ALL);
+                getAddressFromXLSX(filteredLocs, mStatusList.ADDRESS_STATUS_INCLUDE_UNMARKED);
+                getLandmarksFromXLSX();
             }
-            getAddressFromXLSX(locs, mStatusList.ADDRESS_STATUS_INCLUDE_ALL);
-            getAddressFromXLSX(filteredLocs, mStatusList.ADDRESS_STATUS_INCLUDE_UNMARKED);
-            getLandmarksFromXLSX();
+
+            if (locs.getBlocks().size()>0) {
+                block_id = 0;
+            } else {
+                block_id = -1;
+            }
+
+
+
+            btn_unmarked.setText(String.valueOf(unmarked_address));
+            btn_marked.setText(String.valueOf(marked_address));
+            btn_rmlm.setText(String.valueOf(remained_landmark));
+            btn_markedlm.setText(String.valueOf(marked_landmark));
+
+            tv_project.setText(project_name);
+
+            AddAddressDropDown();
+            editAddressTable(unmarked_addresses);
+            editLandmarkTable(remained_landmarks);
+        } catch (Exception e) {
+            Log.e(tag, e.toString());
+            finishActivity();
         }
-
-        if (locs.getBlocks().size()>0) {
-            block_id = 0;
-        } else {
-            block_id = -1;
-        }
-
-
-
-        btn_unmarked.setText(String.valueOf(unmarked_address));
-        btn_marked.setText(String.valueOf(marked_address));
-        btn_rmlm.setText(String.valueOf(remained_landmark));
-        btn_markedlm.setText(String.valueOf(marked_landmark));
-
-        tv_project.setText(project_name);
-
-        AddAddressDropDown();
-        editAddressTable(unmarked_addresses);
-        editLandmarkTable(remained_landmarks);
     }
 
     private void init() {
@@ -663,7 +671,8 @@ public class AddressSelectActivity extends AppCompatActivity {
             JSONArray data = new JSONArray(new Excel_Server(this, Excel_Server.ACTION_GET_LANDMARKS, locs.getProject(project_id).getId()).execute().get());
             for (int k=0; k<data.length(); k++) {
                 JSONObject eaRecord = data.getJSONObject(k);
-                if (eaRecord.getString("lastUpdateBy").equals(login_name)) {
+                //if (eaRecord.getString("lastUpdateBy").equals(login_name)) {
+                if ((eaRecord.getString("status")!=null)&&(eaRecord.getString("status").equals("Assigned"))) {
                     marked_landmarks.add(eaRecord.getString("uuid"));
                     marked_landmark++;
                     marked_address_ids.add(eaRecord.getString("availableAddressId"));

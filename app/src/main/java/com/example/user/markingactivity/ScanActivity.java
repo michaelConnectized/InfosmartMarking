@@ -129,17 +129,30 @@ public class ScanActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
-        if (getSupportActionBar()!=null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        tryOnCreateEvent();
+    }
 
-        initAddressInfo();
-        initBasicInfo();
-        initBlueTooth();
-        initBeaconFilter();
+    private void tryOnCreateEvent() {
+        try {
+            if (getSupportActionBar()!=null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }
+
+            initAddressInfo();
+            initBasicInfo();
+            initBlueTooth();
+            initBeaconFilter();
+        } catch (Exception e) {
+            Log.e(tag, e.toString());
+            finishActivity();
+        }
     }
 
     public void onClickBtnScan(View view) {
+        startScanEvent();
+    }
+
+    private void startScanEvent() {
         if (!scanning) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             if (!mBluetoothAdapter.isEnabled()) {
@@ -395,6 +408,8 @@ public class ScanActivity extends AppCompatActivity {
                 JSONObject eaRecord = data.getJSONObject(k);
 
                 status = "0";
+                if ((eaRecord.getString("status")!=null)&&(eaRecord.getString("status").equals("Assigned")))
+                    status = "1";
                 filterUuidList.add(eaRecord.getString("uuid")+status);
             }
 

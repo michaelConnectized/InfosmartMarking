@@ -118,6 +118,7 @@ public class BeaconPlusManager extends MyBluetoothManager{
                     public void run() {
                         switch (connectionStatus) {
                             case PASSWORDVALIDATING:
+                                Log.e(tag, "PASSWORD VALIDATING");
                                 getPasswordListener.getPassword(landmark.getPwd());
                                 break;
                             case COMPLETED:

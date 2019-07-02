@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -256,6 +257,7 @@ public class bleAdapter extends BaseAdapter {
                             progressDialog.setIndeterminate(true);
 
                             progressDialog.show();
+                            progressDialog.setCanceledOnTouchOutside(false);
                             beaconPlusManager.setOnConnectionStatusChangedListener(status -> {
                                 progressDialog.dismiss();
 
@@ -266,6 +268,10 @@ public class bleAdapter extends BaseAdapter {
                                     case CHANGE_SUCCESS:
                                         showChangedSuccessfulDialog();
                                         sp.edit().putString("beacon_password", beaconPlusManager.getLandmark().getPwd()).commit();
+
+                                        Intent i = new Intent(ctx, ScanActivity.class);
+                                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        ctx.startActivity(i);
                                         break;
                                     case PASSWORD_VALID_TIMEOUT:
                                         showPasswordValidTimeoutDialog();
