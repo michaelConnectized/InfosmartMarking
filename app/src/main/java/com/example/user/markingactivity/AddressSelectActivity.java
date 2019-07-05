@@ -42,6 +42,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class AddressSelectActivity extends AppCompatActivity {
     private static final int MY_PERMISSION_REQUEST_CONSTANT = 2;
@@ -144,6 +145,7 @@ public class AddressSelectActivity extends AppCompatActivity {
             AddAddressDropDown();
             editAddressTable(unmarked_addresses);
             editLandmarkTable(remained_landmarks);
+            setLastAddressSelection();
         } catch (Exception e) {
             Log.e(tag, e.toString());
             finishActivity();
@@ -191,6 +193,53 @@ public class AddressSelectActivity extends AppCompatActivity {
         updateBlock();
     }
 
+    private void setLastAddressSelection() {
+        String block = preferences.getString("selected_block", "");
+        String floor = preferences.getString("selected_floor", "");
+        String room = preferences.getString("selected_room", "");
+        String areawithin = preferences.getString("selected_areawithin", "");
+
+        if (blockStrings.contains(block)) {
+            ddn_block.setText(block);
+            block_id = blockStrings.indexOf(block);
+            updateFloor();
+            if (floorStrings.contains(floor)) {
+                ddn_floor.setText(floor);
+                floor_id = floorStrings.indexOf(floor);
+                updateRoom();
+                List<String> unorderedRoomString = getUnorderedString(roomStrings);
+                if (unorderedRoomString.contains(room)) {
+                    room_id = unorderedRoomString.indexOf(room);
+                    ddn_room.setText(roomStrings.get(room_id));
+                    updateArea();
+                    List<String> unorderedAreaString = getUnorderedString(areaStrings);
+                    if (unorderedAreaString.contains(areawithin)) {
+                        area_id = unorderedAreaString.indexOf(areawithin);
+                        ddn_area.setText(areaStrings.get(area_id));
+                    }
+                }
+            }
+        }
+
+
+        Log.e(tag, areaStrings.toString());
+    }
+
+    private List<String> getUnorderedString(List<String> orderedString) {
+        List<String> unorderedString = new ArrayList<>(orderedString);
+
+        for (int i=0; i<orderedString.size(); i++) {
+            if (orderedString.get(i).contains(". ")) {
+                String[] tmp = orderedString.get(i).split(". ");
+                if (tmp.length>1)
+                    unorderedString.set(i, orderedString.get(i).split(". ")[1]);
+                else
+                    unorderedString.set(i, "");
+            }
+        }
+        return unorderedString;
+    }
+
     public void onClickBtnGo(View view) {
         String[] addresses = new String[]{"", "", "", ""};
         Locations tmpLoc = getCurrentLocs();
@@ -213,7 +262,13 @@ public class AddressSelectActivity extends AppCompatActivity {
         if (server_mode) {
             myIntent.putExtra("address_id", getAddressesIDFromServer(addresses));
         }
-        AddressSelectActivity.this.startActivity(myIntent);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("selected_block", addresses[0]);
+        editor.putString("selected_floor", addresses[1]);
+        editor.putString("selected_room", addresses[2]);
+        editor.putString("selected_areawithin", addresses[3]);
+        editor.commit();
+        startActivity(myIntent);
         this.finish();
     }
 
