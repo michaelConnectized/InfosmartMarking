@@ -37,6 +37,7 @@ public class Excel_Server extends AsyncTask<URL, Integer, String> {
     public static final int ACTION_GET_LANDMARKS = 3;
     public static final int ACTION_ASSIGN_ADDRESS = 5;
 
+    private String serverUrl;
     private String tag = "Excel_Server_Error";
     private String access_token = "";
     private Context ctx;
@@ -50,6 +51,7 @@ public class Excel_Server extends AsyncTask<URL, Integer, String> {
 
         SharedPreferences editor = ctx.getSharedPreferences("Excel_Server", MODE_PRIVATE);
         access_token = editor.getString("access_token", "");
+        serverUrl = PreferenceManager.getDefaultSharedPreferences(ctx).getString("serverUrl", "http://42.200.149.215:9860/excel");
     }
 
     public Excel_Server(Context ctx, int action, String env) {
@@ -80,7 +82,7 @@ public class Excel_Server extends AsyncTask<URL, Integer, String> {
         }
         String response = "";
         try {
-            URL url = new URL("http://42.200.149.215:9860/excel/api/project");
+            URL url = new URL(serverUrl+"/api/project");
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
                 urlConnection.setRequestProperty("Authorization", "Bearer "+access_token);
@@ -124,7 +126,7 @@ public class Excel_Server extends AsyncTask<URL, Integer, String> {
         }
         String response = "";
         try {
-            URL url = new URL("http://42.200.149.215:9860/excel/api/availableAddress/project/"+env);
+            URL url = new URL(serverUrl+"/api/availableAddress/project/"+env);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
                 urlConnection.setRequestProperty("Authorization", "Bearer "+access_token);
@@ -168,7 +170,7 @@ public class Excel_Server extends AsyncTask<URL, Integer, String> {
         }
         String response = "";
         try {
-            URL url = new URL("http://42.200.149.215:9860/excel/api/landmark/"+env);
+            URL url = new URL(serverUrl+"/api/landmark/"+env);
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
                 urlConnection.setRequestProperty("Authorization", "Bearer "+access_token);
@@ -212,7 +214,7 @@ public class Excel_Server extends AsyncTask<URL, Integer, String> {
         }
         String response = "";
         try {
-            URL url = new URL("http://42.200.149.215:9860/excel/api/landmark/assign");
+            URL url = new URL(serverUrl+"/api/landmark/assign");
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
                 urlConnection.setRequestProperty("Authorization", "Bearer "+access_token);
@@ -252,7 +254,7 @@ public class Excel_Server extends AsyncTask<URL, Integer, String> {
     private String getToken() {
         String response = "";
         try {
-            URL url = new URL("http://42.200.149.215:9860/excel/api/oauth/token");
+            URL url = new URL(serverUrl+"/api/oauth/token");
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             try {
                 urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");

@@ -13,6 +13,7 @@ public class LoginActivity  extends AppCompatActivity {
 
     private EditText et_username;
     private EditText et_password;
+    private EditText et_server;
     private SharedPreferences preferences;
 
     @Override
@@ -25,17 +26,21 @@ public class LoginActivity  extends AppCompatActivity {
 
         et_username = findViewById(R.id.et_username);
         et_password = findViewById(R.id.et_password);
+        et_server = findViewById(R.id.et_server);
 
         if (preferences.contains("login_username"))
             et_username.setText(preferences.getString("login_username", ""));
         if (preferences.contains("login_password"))
             et_password.setText(preferences.getString("login_password", ""));
+
+        et_server.setText(preferences.getString("serverUrl", "http://42.200.149.215:9860/excel"));
     }
 
     public void Save(View view) {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("login_username", et_username.getText().toString());
         editor.putString("login_password", et_password.getText().toString());
+        editor.putString("serverUrl", et_server.getText().toString());
         editor.apply();
         Toast.makeText(this, "Save successful!", Toast.LENGTH_LONG).show();
         finishActivity();
@@ -50,5 +55,13 @@ public class LoginActivity  extends AppCompatActivity {
         Intent myIntent = new Intent(LoginActivity.this, ProjectSelectActivity.class);
         LoginActivity.this.startActivity(myIntent);
         this.finish();
+    }
+
+    public void onclickTestingServer(View view) {
+        et_server.setText("http://42.200.149.215:9860/excel");
+    }
+
+    public void onclickProductionServer(View view) {
+        et_server.setText("https://excel.infotronic-tech.com/excel");
     }
 }
