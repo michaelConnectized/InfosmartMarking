@@ -269,9 +269,7 @@ public class bleAdapter extends BaseAdapter {
                                         showChangedSuccessfulDialog();
                                         sp.edit().putString("beacon_password", beaconPlusManager.getLandmark().getPwd()).commit();
 
-                                        Intent i = new Intent(ctx, ScanActivity.class);
-                                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                        ctx.startActivity(i);
+                                        ((TextView)tmpView.findViewById(R.id.tv_newTxpwr)).setText("->"+beaconPlusManager.getLandmark().getTxPwr());
                                         break;
                                     case PASSWORD_VALID_TIMEOUT:
                                         showPasswordValidTimeoutDialog();

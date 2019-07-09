@@ -660,7 +660,7 @@ public class ScanActivity extends AppCompatActivity {
     public void finishActivity() {
         Intent myIntent = new Intent(ScanActivity.this, AddressSelectActivity.class);
         myIntent.putExtra("project_id", project_id);
-        ScanActivity.this.startActivity(myIntent);
+        startActivity(myIntent);
         this.finish();
     }
 }

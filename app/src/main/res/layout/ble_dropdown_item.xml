@@ -98,10 +98,16 @@
                                 android:text="TX POWER: "/>
                             <TextView
                                 android:id="@+id/tv_txpwr"
-                                android:layout_width="80dp"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@android:color/black"
                                 android:text="POWER" />
+                            <TextView
+                                android:id="@+id/tv_newTxpwr"
+                                android:layout_width="80dp"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FF0000"
+                                android:text="" />
                         </LinearLayout>
                         <LinearLayout
                             android:layout_width="wrap_content"
