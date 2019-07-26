@@ -1,6 +1,7 @@
 package com.example.user.markingactivity.object;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 
 import com.example.user.markingactivity.model.Excel_Server;
 
@@ -53,11 +54,24 @@ public class Locations {
 
     public void setProjectsFromServer() {
         try {
-            new Excel_Server(ctx, Excel_Server.ACTION_INIT).execute().get();
-            JSONArray projects = new JSONArray(new Excel_Server(ctx, Excel_Server.ACTION_GET_PROJECTS).execute().get());
+            saveProjectsToSharedPreferences();
+            JSONArray projects = new JSONArray(PreferenceManager.getDefaultSharedPreferences(ctx).getString("projectsFromServer", ""));
             for (int i=0; i<projects.length(); i++) {
                 addProject(projects.getJSONObject(i).getString("id"), projects.getJSONObject(i).getString("title"));
             }
+        } catch (Exception e) {
+
+        }
+    }
+
+    private void saveProjectsToSharedPreferences() {
+        try {
+            new Excel_Server(ctx, Excel_Server.ACTION_INIT).execute().get();
+            String json = new JSONArray(new Excel_Server(ctx, Excel_Server.ACTION_GET_PROJECTS).execute().get()).toString();
+            if (json.equals("")) {
+                return;
+            }
+            PreferenceManager.getDefaultSharedPreferences(ctx).edit().putString("projectsFromServer", json).commit();
         } catch (Exception e) {
 
         }

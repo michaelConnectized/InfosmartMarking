@@ -1,9 +1,11 @@
 package com.example.user.markingactivity.model.Dao;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.arch.persistence.room.Room;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -48,6 +50,7 @@ public class DaoDatabase {
                 dialog.show();
                 try {
                     List<MarkingRecord> tmp_list = toObjectMarkingRecords(db.markingRecordDao().getAll());
+                    String errMsg = "";
                     for (int i=0; i<tmp_list.size(); i++) {
                         String response = new Excel_Server(activity, Excel_Server.ACTION_ASSIGN_ADDRESS, tmp_list.get(i).toString()).execute().get();
                         Log.d(tag, response);
@@ -55,14 +58,28 @@ public class DaoDatabase {
                         if (tmpJSON.getBoolean("success")) {
                             db.markingRecordDao().hardDeleteAll(tmp_list.get(i).getUuid());
                             dialog.setMessage((++progressCount)+"/"+tmp_count);
+                        } else {
+                            if (tmpJSON.getString("message").equals("Date Time Format Invalid")) {
+                                db.markingRecordDao().hardDeleteAll(tmp_list.get(i).getUuid());
+                                errMsg += "\n"+tmp_list.get(i).getUuid()+": Date Time Format Invalid";
+                            }
+                            if (tmpJSON.getString("message").equals("Data outdated")) {
+                                db.markingRecordDao().hardDeleteAll(tmp_list.get(i).getUuid());
+                                errMsg += "\n"+tmp_list.get(i).getUuid()+" Data outdated";
+                            }
+
                         }
                     }
                     if (tmp_count==progressCount) {
                         Toast.makeText(activity, "Upload Successful!", Toast.LENGTH_LONG).show();
                     } else {
-                        Toast.makeText(activity, (tmp_count-progressCount)+" records are failed to upload!", Toast.LENGTH_LONG).show();
+                        if (!errMsg.equals("")) {
+                            errMsg = " Incorrect records has been removed. Reasons: " + errMsg;
+                        }
+                        showDialog((tmp_count-progressCount)+" records are failed to upload!"+errMsg);
                     }
                 } catch (Exception e) {
+                    Toast.makeText(activity, "Upload Fail! "+e.toString(), Toast.LENGTH_LONG).show();
                     Log.e(tag, e.toString());
                 }
             } else {
@@ -109,7 +126,6 @@ public class DaoDatabase {
         db.batteryLastUpdateTime = obj.getBatteryLastUpdateTime();
         db.batteryStatus = obj.getBatteryStatus();
         db.functional = obj.isFunctional();
-
         return db;
     }
 
@@ -130,7 +146,19 @@ public class DaoDatabase {
         obj.setBatteryLastUpdateTime(db.batteryLastUpdateTime);
         obj.setBatteryStatus(db.batteryStatus);
         obj.setFunctional(db.functional);
-
         return obj;
+    }
+
+    public void showDialog(String msg) {
+        new AlertDialog.Builder(activity)
+                .setTitle("Error")
+                .setMessage(msg)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Continue with delete operation
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 }

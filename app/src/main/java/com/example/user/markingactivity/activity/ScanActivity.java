@@ -404,8 +404,8 @@ public class ScanActivity extends AppCompatActivity {
         ArrayList<String> filterUuidList = new ArrayList<String>();
         String status = "";
         try {
-            new Excel_Server(this, Excel_Server.ACTION_INIT).execute().get();
-            JSONArray data = new JSONArray(new Excel_Server(this, Excel_Server.ACTION_GET_LANDMARKS, locs.getProject(project_id).getId()).execute().get());
+            saveFilterListFromServerToSharedPreference();
+            JSONArray data = new JSONArray(getFilterListFromSharedPreference());
             for (int k=0; k<data.length(); k++) {
                 JSONObject eaRecord = data.getJSONObject(k);
 
@@ -521,10 +521,12 @@ public class ScanActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
-        mBluetoothAdapter.cancelDiscovery();
-        mBluetoothAdapter.stopLeScan(mLeScanCallback);
-        handler.removeCallbacks(runnable);
-        unregisterReceiver(incomingPairRequestReceiver);
+        try {
+            mBluetoothAdapter.cancelDiscovery();
+            mBluetoothAdapter.stopLeScan(mLeScanCallback);
+            handler.removeCallbacks(runnable);
+            unregisterReceiver(incomingPairRequestReceiver);
+        } catch (NullPointerException e) {}
         super.onDestroy();
     }
 
@@ -563,8 +565,8 @@ public class ScanActivity extends AppCompatActivity {
 
     public String getLastUpdateDatetimeFromServer(String uuid) {
         try {
-            new Excel_Server(this, Excel_Server.ACTION_INIT).execute().get();
-            JSONArray data = new JSONArray(new Excel_Server(this, Excel_Server.ACTION_GET_LANDMARKS, locs.getProject(project_id).getId()).execute().get());
+            saveLastUpdateFromServerToSharedPreference();
+            JSONArray data = new JSONArray(getLastUpdateDatetimeFromSharedPreference());
             for (int i=0; i<data.length(); i++) {
                 if (data.getJSONObject(i).getString("uuid").equals(uuid)) {
                     return data.getJSONObject(i).getString("lastUpdateDatetime");
@@ -664,5 +666,39 @@ public class ScanActivity extends AppCompatActivity {
         myIntent.putExtra("project_id", project_id);
         startActivity(myIntent);
         this.finish();
+    }
+
+    public void saveFilterListFromServerToSharedPreference() {
+        try {
+            new Excel_Server(this, Excel_Server.ACTION_INIT).execute().get();
+            String json = new JSONArray(new Excel_Server(this, Excel_Server.ACTION_GET_LANDMARKS, locs.getProject(project_id).getId()).execute().get()).toString();
+            if (json.equals("")) {
+                return;
+            }
+            preferences.edit().putString("filterListFromServer", json).commit();
+        } catch (Exception e) {
+
+        }
+    }
+
+    public String getFilterListFromSharedPreference() {
+        return preferences.getString("filterListFromServer", "");
+    }
+
+    public void saveLastUpdateFromServerToSharedPreference() {
+        try {
+            new Excel_Server(this, Excel_Server.ACTION_INIT).execute().get();
+            String json = new JSONArray(new Excel_Server(this, Excel_Server.ACTION_GET_LANDMARKS, locs.getProject(project_id).getId()).execute().get()).toString();
+            if (json.equals("")) {
+                return;
+            }
+            preferences.edit().putString("lastUpdateDatetimeFromServer", json).commit();
+        } catch (Exception e) {
+
+        }
+    }
+
+    public String getLastUpdateDatetimeFromSharedPreference() {
+        return preferences.getString("lastUpdateDatetimeFromServer", "");
     }
 }

@@ -222,7 +222,6 @@ public class Excel_Server extends AsyncTask<URL, Integer, String> {
                 urlConnection.setRequestMethod("PUT");
                 urlConnection.setReadTimeout(10000);
                 urlConnection.setConnectTimeout(15000);
-
                 OutputStream os = urlConnection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(
                         new OutputStreamWriter(os, "UTF-8"));
@@ -231,22 +230,31 @@ public class Excel_Server extends AsyncTask<URL, Integer, String> {
                 writer.close();
                 os.close();
                 int responseCode=urlConnection.getResponseCode();
+                String line;
+                if (responseCode == HttpsURLConnection.HTTP_OK) {
 
-                //if (responseCode == HttpsURLConnection.HTTP_OK) {
-                    String line;
                     BufferedReader br=new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                     while ((line=br.readLine()) != null) {
                         response+=line;
                     }
+
                     return response;
-                //} else {
-                 //   return String.valueOf(responseCode)+" : "+urlConnection.getResponseMessage();
-                //}
+                } else {
+                    Log.e(tag, env);
+                    Log.e(tag, String.valueOf(responseCode)+" : "+urlConnection.getResponseMessage());
+//                    return String.valueOf(responseCode)+" : "+urlConnection.getResponseMessage();
+                }
+                BufferedReader br=new BufferedReader(new InputStreamReader(urlConnection.getErrorStream()));
+                while ((line=br.readLine()) != null) {
+                    response+=line;
+                }
+
+                return response;
             } finally {
                 urlConnection.disconnect();
             }
         } catch (Exception e) {
-            Log.d(tag, e.toString());
+            Log.e(tag, e.toString());
         }
         return "";
     }
