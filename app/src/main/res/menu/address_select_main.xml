@@ -11,4 +11,9 @@
         android:orderInCategory="100"
         android:title="@string/action_lm"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_store_and_forward"
+        android:orderInCategory="100"
+        android:title="@string/action_saf"
+        app:showAsAction="never" />
 </menu>

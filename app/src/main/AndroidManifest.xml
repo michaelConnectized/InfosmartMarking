@@ -7,6 +7,10 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -14,21 +18,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ScanActivity">
+        <activity android:name=".activity.ScanActivity">
         </activity>
-		<activity android:name=".AddressSelectActivity">
+		<activity android:name=".activity.AddressSelectActivity">
         </activity>
-        <activity android:name=".ConfirmActivity">
+        <activity android:name=".activity.ConfirmActivity">
         </activity>
-        <activity android:name=".OptionActivity">
+        <activity android:name=".activity.OptionActivity">
         </activity>
-        <activity android:name=".LoginActivity">
+        <activity android:name=".activity.LoginActivity">
         </activity>
-        <activity android:name=".AddressXLSXActivity">
+        <activity android:name=".activity.AddressXLSXActivity">
         </activity>
-        <activity android:name=".LandmarkXLSXActivity">
+        <activity android:name=".activity.LandmarkXLSXActivity">
         </activity>
-        <activity android:name=".ProjectSelectActivity">
+        <activity android:name=".activity.ProjectSelectActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

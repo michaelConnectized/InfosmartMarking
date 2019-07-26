@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.example.user.markingactivity"
-        minSdkVersion 18
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 8
         versionName "1.8"
@@ -51,6 +51,9 @@ dependencies {
     implementation files('libs/classes.jar')
     implementation files('libs/MTBeaconPlus.jar')
     testImplementation 'com.comcast.magic-wand:appium:4.0.3'
+
+    implementation "android.arch.persistence.room:runtime:1.1.1"
+    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
 }
 
 

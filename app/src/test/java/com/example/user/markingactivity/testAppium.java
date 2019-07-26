@@ -33,7 +33,7 @@ public class testAppium {
         caps.setCapability("platformVersion", "7.1.1");
         caps.setCapability("skipUnlock","true");
         caps.setCapability("appPackage", "com.example.user.markingactivity");
-        caps.setCapability("appActivity","com.example.user.markingactivity.ProjectSelectActivity");
+        caps.setCapability("appActivity","com.example.user.markingactivity.activity.ProjectSelectActivity");
         caps.setCapability("noReset","true");
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"),caps);
         wait = new WebDriverWait(driver, 10);
