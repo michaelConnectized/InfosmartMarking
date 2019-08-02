@@ -1,11 +1,14 @@
 package com.example.user.markingactivity.model;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import com.example.user.markingactivity.shared.SharedPreferencesManager;
 
 import org.json.JSONObject;
 
@@ -44,17 +47,21 @@ public class Excel_Server extends AsyncTask<URL, Integer, String> {
     private int action;
     private String env;
 
-    public Excel_Server(Context ctx, int action) {
+    SharedPreferencesManager sp;
+
+    public Excel_Server(Activity ctx, int action) {
         super();
         this.ctx = ctx;
         this.action = action;
 
+        sp = new SharedPreferencesManager(ctx);
+
         SharedPreferences editor = ctx.getSharedPreferences("Excel_Server", MODE_PRIVATE);
         access_token = editor.getString("access_token", "");
-        serverUrl = PreferenceManager.getDefaultSharedPreferences(ctx).getString("serverUrl", "http://42.200.149.215:9860/excel");
+        serverUrl = sp.getServerUrl();
     }
 
-    public Excel_Server(Context ctx, int action, String env) {
+    public Excel_Server(Activity ctx, int action, String env) {
         this(ctx, action);
         this.env = env;
     }
@@ -77,6 +84,8 @@ public class Excel_Server extends AsyncTask<URL, Integer, String> {
     }
 
     private String getProjects() {
+        Log.e("testing", access_token);
+        Log.e("testing", "HI");
         if (access_token.equals("")) {
             return "Fail";
         }
@@ -279,8 +288,8 @@ public class Excel_Server extends AsyncTask<URL, Integer, String> {
                 HashMap<String, String> hm = new HashMap<String, String>();
                 hm.put("scope", "api");
                 hm.put("grant_type", "password");
-                hm.put("username", preferences.getString("login_username", "")); //"peterson@connectized.com"
-                hm.put("password", preferences.getString("login_password", "")); //"ipwc3298HA"
+                hm.put("username",sp.getLoginUsername()); //"peterson@connectized.com"
+                hm.put("password",sp.getLoginPassword()); //"ipwc3298HA"
 
                 OutputStream os = urlConnection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(

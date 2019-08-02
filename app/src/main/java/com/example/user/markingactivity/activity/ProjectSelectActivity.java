@@ -19,6 +19,7 @@ import android.widget.Switch;
 import com.example.user.markingactivity.model.ExcelPath;
 import com.example.user.markingactivity.object.Locations;
 import com.example.user.markingactivity.R;
+import com.example.user.markingactivity.shared.SharedPreferencesManager;
 
 import java.util.ArrayList;
 
@@ -26,7 +27,7 @@ public class ProjectSelectActivity extends AppCompatActivity {
     private static final int MY_PERMISSION_REQUEST_CONSTANT = 2;
 
     private Switch switch_server_xml;
-    private SharedPreferences preferences;
+    private SharedPreferencesManager sp;
     private boolean server_mode;
 
     @Override
@@ -34,8 +35,9 @@ public class ProjectSelectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_project_select);
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        server_mode = preferences.getBoolean("server_mode", true);
+        sp = new SharedPreferencesManager(this);
+
+        server_mode = sp.isServerMode();
 		ListView project_list = findViewById(R.id.project_list);
 
         switch_server_xml = findViewById(R.id.switch_server_xml);
@@ -62,9 +64,9 @@ public class ProjectSelectActivity extends AppCompatActivity {
         switch_server_xml.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    preferences.edit().putBoolean("server_mode", true).commit();
+                    sp.setServerMode(true);
                 } else {
-                    preferences.edit().putBoolean("server_mode", false).commit();
+                    sp.setServerMode(false);
                 }
                 refreshPage();
             }

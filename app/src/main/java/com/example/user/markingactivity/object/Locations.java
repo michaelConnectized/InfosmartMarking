@@ -1,5 +1,6 @@
 package com.example.user.markingactivity.object;
 
+import android.app.Activity;
 import android.content.Context;
 import android.preference.PreferenceManager;
 
@@ -14,9 +15,9 @@ import java.util.Arrays;
 public class Locations {
     private ArrayList<Project> projects;
     private ArrayList<Block> blocks;
-    private Context ctx;
+    private Activity ctx;
 
-    public Locations(Context ctx) {
+    public Locations(Activity ctx) {
         projects = new ArrayList<Project>();
         blocks = new ArrayList<Block>();
         this.ctx = ctx;

@@ -1,21 +1,20 @@
 package com.example.user.markingactivity.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.user.markingactivity.R;
+import com.example.user.markingactivity.shared.SharedPreferencesManager;
 
 public class OptionActivity extends AppCompatActivity {
 
     private EditText et_scan_range_start;
     private EditText et_scan_time;
-    private SharedPreferences preferences;
+    private SharedPreferencesManager sp;
 
     private int project_id;
     private String[] addresses;
@@ -25,18 +24,19 @@ public class OptionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_option);
 
+        sp = new SharedPreferencesManager(this);
+
         Intent intent = getIntent();
         project_id = intent.getIntExtra("project_id", 0);
         addresses = intent.getStringArrayExtra("addresses");
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         et_scan_range_start = findViewById(R.id.et_scan_range_start);
         et_scan_time = findViewById(R.id.et_scan_time);
 
-        if (preferences.contains("scan_range"))
-            et_scan_range_start.setText(String.valueOf(preferences.getInt("scan_range", 100)*-1));
-        if (preferences.contains("scan_time"))
-            et_scan_time.setText(String.valueOf(preferences.getInt("scan_time", 15)));
+        if (sp.hasScanRange())
+            et_scan_range_start.setText(String.valueOf(sp.getScanRange()*-1));
+        if (sp.hasScanTime())
+            et_scan_time.setText(String.valueOf(sp.getScanTime()));
     }
 
     public void Save(View view) {
@@ -50,11 +50,8 @@ public class OptionActivity extends AppCompatActivity {
             scan_time = 1;
         }
 
-
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("scan_range", scan_range*-1);
-        editor.putInt("scan_time", scan_time);
-        editor.apply();
+        sp.setScanRange(scan_range*-1);
+        sp.setScanTime(scan_time);
         Toast.makeText(this, "Save successful!", Toast.LENGTH_LONG).show();
         finishActivity();
     }

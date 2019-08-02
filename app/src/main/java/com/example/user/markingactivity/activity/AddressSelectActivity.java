@@ -25,6 +25,7 @@ import com.example.user.markingactivity.model.ExcelPath;
 import com.example.user.markingactivity.model.Excel_Server;
 import com.example.user.markingactivity.object.Locations;
 import com.example.user.markingactivity.R;
+import com.example.user.markingactivity.shared.SharedPreferencesManager;
 import com.example.user.markingactivity.utils.mStatusList;
 import com.example.user.markingactivity.object.Area;
 import com.example.user.markingactivity.object.Block;
@@ -46,7 +47,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -95,7 +98,7 @@ public class AddressSelectActivity extends AppCompatActivity {
     Locations filteredLocs;
     int showing_status = mStatusList.ADDRESS_STATUS_INCLUDE_UNMARKED;
 
-    private SharedPreferences preferences;
+    private SharedPreferencesManager sp;
     private boolean server_mode;
 
     @Override
@@ -108,7 +111,7 @@ public class AddressSelectActivity extends AppCompatActivity {
     private void tryOnCreateEvent() {
         try {
             init();
-            server_mode = preferences.getBoolean("server_mode", true);
+            server_mode = sp.isServerMode();
 
             Intent intent = getIntent();
             project_id = intent.getIntExtra("project_id", 0);
@@ -118,6 +121,9 @@ public class AddressSelectActivity extends AppCompatActivity {
                 filteredLocs.setProjectsFromServer();
 
                 project_name = locs.getProject(project_id).getName();
+
+                sp.saveDataFromServer(String.valueOf(project_id), locs.getProject(project_id).getId());
+
                 getLandmarksFromSharedPreference();
                 getAddressFromServer();
             } else {
@@ -153,7 +159,9 @@ public class AddressSelectActivity extends AppCompatActivity {
             editAddressTable(unmarked_addresses);
             editLandmarkTable(remained_landmarks);
             setLastAddressSelection();
-        } catch (Exception e) {
+
+            ((TextView)findViewById(R.id.tv_ltime)).setText("Last Update: "+sp.getGetDataFromServerTime(String.valueOf(project_id)));
+        } catch (NullPointerException e) {
             Log.e(tag, e.toString());
             finishActivity();
         }
@@ -177,7 +185,7 @@ public class AddressSelectActivity extends AppCompatActivity {
         ll_addresses_table = findViewById(R.id.ll_addresses_table);
         ll_landmarks_table = findViewById(R.id.ll_landmarks_table);
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sp = new SharedPreferencesManager(this);
 
         unmarked_addresses = new ArrayList<String>();
         marked_addresses = new ArrayList<String>();
@@ -188,6 +196,8 @@ public class AddressSelectActivity extends AppCompatActivity {
         filteredLocs = new Locations(this);
 
         fileExtension = "";
+
+
     }
 
     private void AddAddressDropDown() {
@@ -201,10 +211,10 @@ public class AddressSelectActivity extends AppCompatActivity {
     }
 
     private void setLastAddressSelection() {
-        String block = preferences.getString("selected_block", "");
-        String floor = preferences.getString("selected_floor", "");
-        String room = preferences.getString("selected_room", "");
-        String areawithin = preferences.getString("selected_areawithin", "");
+        String block = sp.getSelectedBlock();
+        String floor = sp.getSelectedFloor();
+        String room = sp.getSelectedRoom();
+        String areawithin = sp.getSelectedAreaWithin();
 
         if (blockStrings.contains(block)) {
             ddn_block.setText(block);
@@ -270,12 +280,11 @@ public class AddressSelectActivity extends AppCompatActivity {
             myIntent.putExtra("address_id", getAddressesIDFromSharedPreference(addresses));
             Log.e(tag, getAddressesIDFromSharedPreference(addresses));
         }
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("selected_block", addresses[0]);
-        editor.putString("selected_floor", addresses[1]);
-        editor.putString("selected_room", addresses[2]);
-        editor.putString("selected_areawithin", addresses[3]);
-        editor.commit();
+
+        sp.setSelectedBlock(addresses[0]);
+        sp.setSelectedFloor(addresses[1]);
+        sp.setSelectedRoom(addresses[2]);
+        sp.setSelectedAreaWithin(addresses[3]);
 
         startActivity(myIntent);
         this.finish();
@@ -562,8 +571,7 @@ public class AddressSelectActivity extends AppCompatActivity {
 
     public void getAddressFromServer() {
         try {
-            saveAddrFromServerToSharedPreference();
-            JSONArray data = new JSONArray(preferences.getString("addressesFromServer", ""));
+            JSONArray data = new JSONArray(sp.getAddressesFromServer(String.valueOf(project_id)));
 
             for (int k=0; k<data.length(); k++) {
                 JSONObject eaRecord = data.getJSONObject(k);
@@ -727,26 +735,14 @@ public class AddressSelectActivity extends AppCompatActivity {
         }
     }
 
-    public void saveLandmarksFromServerToSharedPreference() {
-        try {
-            new Excel_Server(this, Excel_Server.ACTION_INIT).execute().get();
-            String json = new JSONArray(new Excel_Server(this, Excel_Server.ACTION_GET_LANDMARKS, locs.getProject(project_id).getId()).execute().get()).toString();
-            if (json.equals("")) {
-                return;
-            }
-            preferences.edit().putString("landmarksFromServer", json).commit();
-        } catch (Exception e) {
-        }
-    }
-
     //getAddressFromXLSX(Para1: storage, Para2: store the data without this status)
     public void getLandmarksFromSharedPreference() {
         try {
-            String login_name = preferences.getString("login_username", "");
+            String login_name = sp.getLoginUsername();
             marked_address_ids = new ArrayList<String>();
 
-            saveLandmarksFromServerToSharedPreference();
-            JSONArray data = new JSONArray(preferences.getString("landmarksFromServer", ""));
+
+            JSONArray data = new JSONArray(sp.getLandmarksFromServer(String.valueOf(project_id)));
             for (int k=0; k<data.length(); k++) {
                 JSONObject eaRecord = data.getJSONObject(k);
                 //if (eaRecord.getString("lastUpdateBy").equals(login_name)) {
@@ -877,26 +873,13 @@ public class AddressSelectActivity extends AppCompatActivity {
     }
 
 
-    public void saveAddrFromServerToSharedPreference() {
-        try {
-            new Excel_Server(this, Excel_Server.ACTION_INIT).execute().get();
-            String addressJson = new JSONArray(new Excel_Server(this, Excel_Server.ACTION_GET_ADDRESSES, locs.getProject(project_id).getId()).execute().get()).toString();
-            if (addressJson.equals("")) {
-                return;
-            }
-            preferences.edit().putString("addressesFromServer", addressJson).commit();
-        } catch (Exception e) {
-
-        }
-    }
-
     public String getAddressesIDFromSharedPreference(String[] addresses) {
         String condition = "";
         String target = "";
 
         try {
-            saveAddrFromServerToSharedPreference();
-            JSONArray data = new JSONArray(preferences.getString("addressesFromServer", ""));
+
+            JSONArray data = new JSONArray(sp.getAddressesFromServer(String.valueOf(project_id)));
 
             outerLoop:
             for (int k = 0; k < data.length(); k++) {

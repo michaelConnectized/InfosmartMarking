@@ -60,7 +60,7 @@ public class DaoDatabase {
                             dialog.setMessage((++progressCount)+"/"+tmp_count);
                         } else {
                             if (tmpJSON.getString("message").equals("Date Time Format Invalid")) {
-                                db.markingRecordDao().hardDeleteAll(tmp_list.get(i).getUuid());
+//                                db.markingRecordDao().hardDeleteAll(tmp_list.get(i).getUuid());
                                 errMsg += "\n"+tmp_list.get(i).getUuid()+": Date Time Format Invalid";
                             }
                             if (tmpJSON.getString("message").equals("Data outdated")) {

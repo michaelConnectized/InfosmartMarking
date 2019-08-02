@@ -10,13 +10,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.user.markingactivity.R;
+import com.example.user.markingactivity.shared.SharedPreferencesManager;
 
 public class LoginActivity  extends AppCompatActivity {
 
     private EditText et_username;
     private EditText et_password;
     private EditText et_server;
-    private SharedPreferences preferences;
+    private SharedPreferencesManager sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,26 +25,25 @@ public class LoginActivity  extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         Intent intent = getIntent();
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         et_username = findViewById(R.id.et_username);
         et_password = findViewById(R.id.et_password);
         et_server = findViewById(R.id.et_server);
 
-        if (preferences.contains("login_username"))
-            et_username.setText(preferences.getString("login_username", ""));
-        if (preferences.contains("login_password"))
-            et_password.setText(preferences.getString("login_password", ""));
+        sp = new SharedPreferencesManager(this);
 
-        et_server.setText(preferences.getString("serverUrl", "http://42.200.149.215:9860/excel"));
+        if (sp.hasLoginUsername())
+            et_username.setText(sp.getLoginUsername());
+        if (sp.hasLoginPassword())
+            et_password.setText(sp.getLoginPassword());
+
+        et_server.setText(sp.getServerUrl());
     }
 
     public void Save(View view) {
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("login_username", et_username.getText().toString());
-        editor.putString("login_password", et_password.getText().toString());
-        editor.putString("serverUrl", et_server.getText().toString());
-        editor.apply();
+        sp.setLoginUsername(et_username.getText().toString());
+        sp.setLoginPassword(et_password.getText().toString());
+        sp.setServerUrl(et_server.getText().toString());
         Toast.makeText(this, "Save successful!", Toast.LENGTH_LONG).show();
         finishActivity();
     }

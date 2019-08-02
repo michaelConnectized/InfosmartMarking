@@ -31,6 +31,7 @@ import com.example.user.markingactivity.object.Locations;
 import com.example.user.markingactivity.R;
 import com.example.user.markingactivity.object.MarkingRecord;
 import com.example.user.markingactivity.object.mDevice;
+import com.example.user.markingactivity.shared.SharedPreferencesManager;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -78,7 +79,7 @@ public class ConfirmActivity extends AppCompatActivity {
     String[] addresses;
     String fileExtension;
 
-    private SharedPreferences preferences;
+    private SharedPreferencesManager sp;
     private boolean server_mode;
 
     @Override
@@ -106,7 +107,7 @@ public class ConfirmActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sp = new SharedPreferencesManager(this);
         locs = new Locations(this);
         mDevs = new ArrayList<mDevice>();
 
@@ -117,7 +118,7 @@ public class ConfirmActivity extends AppCompatActivity {
         tv_project = findViewById(R.id.tv_project);
         lv = findViewById(R.id.lv);
 
-        server_mode = preferences.getBoolean("server_mode", true);
+        server_mode = sp.isServerMode();
     }
 
     private void initVarFromIntentExtra() {

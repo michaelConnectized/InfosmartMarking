@@ -2,8 +2,10 @@ package com.example.user.markingactivity.baseAdapter;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -124,12 +126,12 @@ public class bleAdapter extends BaseAdapter {
         for (mDevice mDev: mDevs) {
             View tmpView = LayoutInflater.from(ctx).inflate(R.layout.ble_dropdown_item, newLinearView, false);
             mDevice currentDevice = (mDevice)getItem(count);
-            TextView tv_uuid = tmpView.findViewById(R.id.tv_uuid);
-            TextView tv_name = tmpView.findViewById(R.id.tv_name);
-            TextView tv_address = tmpView.findViewById(R.id.tv_address);
+//            TextView tv_uuid = tmpView.findViewById(R.id.tv_uuid);
+//            TextView tv_name = tmpView.findViewById(R.id.tv_name);
+//            TextView tv_address = tmpView.findViewById(R.id.tv_address);
             TextView tv_major = tmpView.findViewById(R.id.tv_major);
             TextView tv_minor = tmpView.findViewById(R.id.tv_minor);
-            TextView tv_pwr = tmpView.findViewById(R.id.tv_pwr);
+//            TextView tv_pwr = tmpView.findViewById(R.id.tv_pwr);
             TextView tv_txpwr = tmpView.findViewById(R.id.tv_txpwr);
             TextView tv_rssi = tmpView.findViewById(R.id.tv_rssi);
             chk_check = tmpView.findViewById(R.id.chk_check);
@@ -139,21 +141,21 @@ public class bleAdapter extends BaseAdapter {
                 chk_check.setVisibility(View.VISIBLE);
             }
 
-            tv_name.setText(currentDevice.getName());
-            tv_address.setText(currentDevice.getAddress());
+//            tv_name.setText(currentDevice.getName());
+//            tv_address.setText(currentDevice.getAddress());
             tv_rssi.setText(String.valueOf(currentDevice.getRSSI()));
             tv_major.setText(String.valueOf(currentDevice.getMajor()));
             tv_minor.setText(String.valueOf(currentDevice.getMinor()));
-            if (currentDevice.getBatteryLevel()!=999) {
-                tv_pwr.setText(String.valueOf(currentDevice.getBatteryLevel()));
-            } else {
-                tv_pwr.setText("N/A");
-            }
+//            if (currentDevice.getBatteryLevel()!=999) {
+//                tv_pwr.setText(String.valueOf(currentDevice.getBatteryLevel()));
+//            } else {
+//                tv_pwr.setText("N/A");
+//            }
 
             tv_txpwr.setText(String.valueOf(currentDevice.getPower()));
-            if (currentDevice.getUUID()!=null) {
-                tv_uuid.setText(currentDevice.getUUID().toString());
-            }
+//            if (currentDevice.getUUID()!=null) {
+//                tv_uuid.setText(currentDevice.getUUID().toString());
+//            }
 
             chk_check.setTag(count);
             chk_check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -174,6 +176,7 @@ public class bleAdapter extends BaseAdapter {
                     }
             });
 
+            //Button for edit tx pwr
             Button btn_edit_txPwr = tmpView.findViewById(R.id.btn_edit_txPwr);
             btn_edit_txPwr.setTag(R.id.tv_address);
 
@@ -286,6 +289,30 @@ public class bleAdapter extends BaseAdapter {
                     dlgAlert.create().show();
                 }
             });
+
+            //Button for show details
+            Button btn_details = tmpView.findViewById(R.id.btn_details);
+            Dialog detailsDialog = new Dialog(activity);
+            detailsDialog.setContentView(R.layout.dialog_ble_details);
+
+            if (currentDevice.getUUID()!=null) {
+                ((TextView)detailsDialog.findViewById(R.id.tv_uuid)).setText(currentDevice.getUUID().toString());
+            }
+
+            ((TextView)detailsDialog.findViewById(R.id.tv_name)).setText(currentDevice.getName());
+            ((TextView)detailsDialog.findViewById(R.id.tv_address)).setText(currentDevice.getAddress());
+            ((TextView)detailsDialog.findViewById(R.id.tv_major)).setText(String.valueOf(currentDevice.getMajor()));
+            ((TextView)detailsDialog.findViewById(R.id.tv_minor)).setText(String.valueOf(currentDevice.getMinor()));
+            ((TextView)detailsDialog.findViewById(R.id.tv_txpwr)).setText(String.valueOf(currentDevice.getPower()));;
+            ((TextView)detailsDialog.findViewById(R.id.tv_rssi)).setText(String.valueOf(currentDevice.getRSSI()));
+            if (currentDevice.getBatteryLevel()!=999) {
+                ((TextView)detailsDialog.findViewById(R.id.tv_pwr)).setText(String.valueOf(currentDevice.getBatteryLevel()));
+            } else {
+                ((TextView)detailsDialog.findViewById(R.id.tv_pwr)).setText("N/A");
+            }
+
+            detailsDialog.setTitle(String.valueOf(currentDevice.getMajor())+"."+String.valueOf(currentDevice.getMinor()));
+            btn_details.setOnClickListener((v)->detailsDialog.show());
 
 
             newLinearView.addView(tmpView);

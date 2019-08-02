@@ -37,6 +37,7 @@ import com.example.user.markingactivity.R;
 import com.example.user.markingactivity.analyser.BeaconAnalyser;
 import com.example.user.markingactivity.baseAdapter.bleAdapter;
 import com.example.user.markingactivity.object.mDevice;
+import com.example.user.markingactivity.shared.SharedPreferencesManager;
 import com.neovisionaries.bluetooth.ble.advertising.ADPayloadParser;
 import com.neovisionaries.bluetooth.ble.advertising.ADStructure;
 import com.neovisionaries.bluetooth.ble.advertising.IBeacon;
@@ -89,7 +90,7 @@ public class ScanActivity extends AppCompatActivity {
     private bleAdapter bleA;
 
     //settings
-    private SharedPreferences preferences;
+    private SharedPreferencesManager sp;
     private int scan_range;
     private boolean scanning;
     private boolean server_mode;
@@ -247,16 +248,16 @@ public class ScanActivity extends AppCompatActivity {
 
     private void initAddressInfo() {
         locs = new Locations(this);
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        scan_range = preferences.getInt("scan_range", -100);
-        scan_time = preferences.getInt("scan_time", 5);
+        sp = new SharedPreferencesManager(this);
+        scan_range = sp.getScanRange();
+        scan_time = sp.getScanTime();
         Intent intent = getIntent();
         address_id = intent.getStringExtra("address_id");
 
         project_id = intent.getIntExtra("project_id", 0);
         address_row_num = intent.getIntExtra("row_num", 0);
         addresses = intent.getStringArrayExtra("addresses");
-        server_mode = preferences.getBoolean("server_mode", true);
+        server_mode = sp.isServerMode();
 
         if (server_mode) {
             locs.setProjectsFromServer();
@@ -404,8 +405,8 @@ public class ScanActivity extends AppCompatActivity {
         ArrayList<String> filterUuidList = new ArrayList<String>();
         String status = "";
         try {
-            saveFilterListFromServerToSharedPreference();
-            JSONArray data = new JSONArray(getFilterListFromSharedPreference());
+            JSONArray data = new JSONArray(sp.getLandmarksFromServer(String.valueOf(project_id)));
+            Log.e("error", data.toString());
             for (int k=0; k<data.length(); k++) {
                 JSONObject eaRecord = data.getJSONObject(k);
 
@@ -414,9 +415,9 @@ public class ScanActivity extends AppCompatActivity {
                     status = "1";
                 filterUuidList.add(eaRecord.getString("uuid")+status);
             }
-
+            Log.e("uuidList", "filterUuidList: "+filterUuidList.toString());
         } catch (Exception e) {
-            Log.d("error", e.toString());
+            Log.e("error", e.toString());
         }
 
         this.filterUuidList = filterUuidList.toArray(new String[filterUuidList.size()]);
@@ -565,8 +566,7 @@ public class ScanActivity extends AppCompatActivity {
 
     public String getLastUpdateDatetimeFromServer(String uuid) {
         try {
-            saveLastUpdateFromServerToSharedPreference();
-            JSONArray data = new JSONArray(getLastUpdateDatetimeFromSharedPreference());
+            JSONArray data = new JSONArray();
             for (int i=0; i<data.length(); i++) {
                 if (data.getJSONObject(i).getString("uuid").equals(uuid)) {
                     return data.getJSONObject(i).getString("lastUpdateDatetime");
@@ -590,9 +590,6 @@ public class ScanActivity extends AppCompatActivity {
             mmDevice = device.getBtDevice();
 
             try {
-                // Get a BluetoothSocket to connect with the given BluetoothDevice.
-                // MY_UUID is the app's UUID string, also used in the server code.
-                //Log.d("testingBLECon", device.getUuids()[0].getUuid().toString());
                 mmDevice.setPin(convertPinToBytes("ktcos23g"));
                 Method method = mmDevice.getClass().getMethod("createBond", (Class[]) null);
                 method.invoke(mmDevice, (Object[]) null);
@@ -666,39 +663,5 @@ public class ScanActivity extends AppCompatActivity {
         myIntent.putExtra("project_id", project_id);
         startActivity(myIntent);
         this.finish();
-    }
-
-    public void saveFilterListFromServerToSharedPreference() {
-        try {
-            new Excel_Server(this, Excel_Server.ACTION_INIT).execute().get();
-            String json = new JSONArray(new Excel_Server(this, Excel_Server.ACTION_GET_LANDMARKS, locs.getProject(project_id).getId()).execute().get()).toString();
-            if (json.equals("")) {
-                return;
-            }
-            preferences.edit().putString("filterListFromServer", json).commit();
-        } catch (Exception e) {
-
-        }
-    }
-
-    public String getFilterListFromSharedPreference() {
-        return preferences.getString("filterListFromServer", "");
-    }
-
-    public void saveLastUpdateFromServerToSharedPreference() {
-        try {
-            new Excel_Server(this, Excel_Server.ACTION_INIT).execute().get();
-            String json = new JSONArray(new Excel_Server(this, Excel_Server.ACTION_GET_LANDMARKS, locs.getProject(project_id).getId()).execute().get()).toString();
-            if (json.equals("")) {
-                return;
-            }
-            preferences.edit().putString("lastUpdateDatetimeFromServer", json).commit();
-        } catch (Exception e) {
-
-        }
-    }
-
-    public String getLastUpdateDatetimeFromSharedPreference() {
-        return preferences.getString("lastUpdateDatetimeFromServer", "");
     }
 }
