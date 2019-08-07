@@ -8,21 +8,35 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.user.markingactivity.model.ExcelPath;
 import com.example.user.markingactivity.model.Excel_Server;
 import com.example.user.markingactivity.model.MarkingRecordDB;
 import com.example.user.markingactivity.object.MarkingRecord;
+import com.example.user.markingactivity.object.mDevice;
 import com.example.user.markingactivity.utils.Network.MyNetwork;
 
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static android.content.Context.MODE_APPEND;
 import static android.content.Context.MODE_PRIVATE;
 
 public class DaoDatabase {
@@ -60,10 +74,12 @@ public class DaoDatabase {
                             dialog.setMessage((++progressCount)+"/"+tmp_count);
                         } else {
                             if (tmpJSON.getString("message").equals("Date Time Format Invalid")) {
-//                                db.markingRecordDao().hardDeleteAll(tmp_list.get(i).getUuid());
+                                saveInExcel(tmp_list.get(i).toString());
+                                db.markingRecordDao().hardDeleteAll(tmp_list.get(i).getUuid());
                                 errMsg += "\n"+tmp_list.get(i).getUuid()+": Date Time Format Invalid";
                             }
                             if (tmpJSON.getString("message").equals("Data outdated")) {
+                                saveInExcel(tmp_list.get(i).toString());
                                 db.markingRecordDao().hardDeleteAll(tmp_list.get(i).getUuid());
                                 errMsg += "\n"+tmp_list.get(i).getUuid()+" Data outdated";
                             }
@@ -160,5 +176,28 @@ public class DaoDatabase {
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+    }
+
+    public void saveInExcel(String content) {
+        try {
+            File path = new File(ExcelPath.SendingLog);
+            if (!path.exists()) {
+                path.mkdirs();
+            }
+
+            File file = new File(ExcelPath.SendingLog+"/"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+".txt");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            if (file.exists()) {
+                FileOutputStream fOut = new FileOutputStream(file, true);
+                OutputStreamWriter writer = new OutputStreamWriter(fOut);
+                writer.append(content);
+                writer.close();
+            }
+        } catch (Exception e) {
+            Log.d("Files", e.toString());
+        }
     }
 }

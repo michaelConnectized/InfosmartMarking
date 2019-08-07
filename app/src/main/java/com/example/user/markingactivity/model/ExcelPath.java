@@ -12,6 +12,8 @@ public class ExcelPath {
     public static final String TargetLog = LogPath+"/targets";
     public static final String OtherLog = LogPath+"/others";
 
+    public static final String SendingLog = LogPath+"/failSent";
+
     public static String xls(String file) {
         return file+".xls";
     }

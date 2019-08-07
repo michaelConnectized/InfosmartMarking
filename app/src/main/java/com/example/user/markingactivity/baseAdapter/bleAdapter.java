@@ -83,30 +83,30 @@ public class bleAdapter extends BaseAdapter {
             view = LayoutInflater.from(ctx).inflate(R.layout.ble_dropdown_item, viewGroup, false);;
         }
         mDevice currentDevice = (mDevice)getItem(position);
-        TextView tv_uuid = view.findViewById(R.id.tv_uuid);
-        TextView tv_name = view.findViewById(R.id.tv_name);
-        TextView tv_address = view.findViewById(R.id.tv_address);
+//        TextView tv_uuid = view.findViewById(R.id.tv_uuid);
+//        TextView tv_name = view.findViewById(R.id.tv_name);
+//        TextView tv_address = view.findViewById(R.id.tv_address);
         TextView tv_major = view.findViewById(R.id.tv_major);
         TextView tv_minor = view.findViewById(R.id.tv_minor);
         TextView tv_rssi = view.findViewById(R.id.tv_rssi);
-        TextView tv_pwr = view.findViewById(R.id.tv_pwr);
+//        TextView tv_pwr = view.findViewById(R.id.tv_pwr);
         TextView tv_txpwr = view.findViewById(R.id.tv_txpwr);
 
         CheckBox chk_check = view.findViewById(R.id.chk_check);
         RelativeLayout relLay = view.findViewById(R.id.relLay);
 
-        tv_name.setText(currentDevice.getName());
-        tv_address.setText(currentDevice.getAddress());
+//        tv_name.setText(currentDevice.getName());
+//        tv_address.setText(currentDevice.getAddress());
         tv_major.setText(String.valueOf(currentDevice.getMajor()));
         tv_minor.setText(String.valueOf(currentDevice.getMinor()));
         tv_rssi.setText(String.valueOf(currentDevice.getRSSI()));
-        tv_pwr.setText(String.valueOf(currentDevice.getBatteryLevel()));
+//        tv_pwr.setText(String.valueOf(currentDevice.getBatteryLevel()));
         tv_txpwr.setText(String.valueOf(currentDevice.getPower()));
 
         chk_check.setTag(position);
-        if (tv_uuid!=null) {
-            tv_uuid.setText(currentDevice.getUUID().toString());
-        }
+//        if (tv_uuid!=null) {
+//            tv_uuid.setText(currentDevice.getUUID().toString());
+//        }
 
         return view;
     }
@@ -140,6 +140,30 @@ public class bleAdapter extends BaseAdapter {
             } else {
                 chk_check.setVisibility(View.VISIBLE);
             }
+
+            //Button for show details
+            Button btn_details1 = tmpView.findViewById(R.id.btn_details);
+            Dialog detailsDialog1 = new Dialog(activity);
+            detailsDialog1.setContentView(R.layout.dialog_ble_details);
+
+            if (currentDevice.getUUID()!=null) {
+                ((TextView)detailsDialog1.findViewById(R.id.tv_uuid)).setText(currentDevice.getUUID().toString());
+            }
+
+            ((TextView)detailsDialog1.findViewById(R.id.tv_name)).setText(currentDevice.getName());
+            ((TextView)detailsDialog1.findViewById(R.id.tv_address)).setText(currentDevice.getAddress());
+            ((TextView)detailsDialog1.findViewById(R.id.tv_major)).setText(String.valueOf(currentDevice.getMajor()));
+            ((TextView)detailsDialog1.findViewById(R.id.tv_minor)).setText(String.valueOf(currentDevice.getMinor()));
+            ((TextView)detailsDialog1.findViewById(R.id.tv_txpwr)).setText(String.valueOf(currentDevice.getPower()));;
+            ((TextView)detailsDialog1.findViewById(R.id.tv_rssi)).setText(String.valueOf(currentDevice.getRSSI()));
+            if (currentDevice.getBatteryLevel()!=999) {
+                ((TextView)detailsDialog1.findViewById(R.id.tv_pwr)).setText(String.valueOf(currentDevice.getBatteryLevel()));
+            } else {
+                ((TextView)detailsDialog1.findViewById(R.id.tv_pwr)).setText("N/A");
+            }
+
+            detailsDialog1.setTitle(String.valueOf(currentDevice.getMajor())+"."+String.valueOf(currentDevice.getMinor()));
+            btn_details1.setOnClickListener((v)->detailsDialog1.show());
 
 //            tv_name.setText(currentDevice.getName());
 //            tv_address.setText(currentDevice.getAddress());

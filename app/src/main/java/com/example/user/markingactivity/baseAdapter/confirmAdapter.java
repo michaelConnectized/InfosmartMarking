@@ -22,7 +22,7 @@ public class confirmAdapter extends bleAdapter {
         mDevice currentDevice = (mDevice)getItem(position);
         View confirmView = super.getView(position, view, viewGroup);
         confirmView.findViewById(R.id.chk_check).setVisibility(View.GONE);
-        ((TextView)confirmView.findViewById(R.id.tv_uuid)).setText(currentDevice.getmUUID());
+//        ((TextView)confirmView.findViewById(R.id.tv_uuid)).setText(currentDevice.getmUUID());
 
         Button btn_edit_txPwr = confirmView.findViewById(R.id.btn_edit_txPwr);
         btn_edit_txPwr.setVisibility(View.GONE);

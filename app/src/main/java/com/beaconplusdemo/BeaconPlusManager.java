@@ -172,6 +172,7 @@ public class BeaconPlusManager extends MyBluetoothManager{
         int curSlot = infoFrame.getCurSlot();
         infoFrame.setAdvtxPower(Integer.valueOf(landmark.getTxPwr())); // RSSI@0m
         infoFrame.setRadiotxPower(Integer.valueOf(landmark.getTxPwr())); // Radio txpower
+
         // write to device.
         // detail: 1.let No.0 slot advertise iBeacon data.
         //         2.set No.0 slot advertisement interval to 600ms, RSSI@0m to -3dbm, radio txpower to 4dbm

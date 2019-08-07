@@ -160,11 +160,17 @@ public class AddressSelectActivity extends AppCompatActivity {
             editLandmarkTable(remained_landmarks);
             setLastAddressSelection();
 
+
+            updateStoredRecords();
             ((TextView)findViewById(R.id.tv_ltime)).setText("Last Update: "+sp.getGetDataFromServerTime(String.valueOf(project_id)));
         } catch (NullPointerException e) {
             Log.e(tag, e.toString());
             finishActivity();
         }
+    }
+
+    private void updateStoredRecords() {
+        ((TextView)findViewById(R.id.tv_remainSNF)).setText("Stored Records: "+new DaoDatabase(this).getCount());
     }
 
     private void init() {
@@ -842,6 +848,7 @@ public class AddressSelectActivity extends AppCompatActivity {
         if (id == R.id.action_store_and_forward) {
             try {
                 new DaoDatabase(this).checkDaoNSendToServer();
+                updateStoredRecords();
             } catch (InterruptedException e) { }
         }
 

@@ -391,6 +391,13 @@
 
             </LinearLayout>
             <TextView
+                android:id="@+id/tv_remainSNF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_above="@+id/tv_ltime"
+                android:text="Stored Records: "/>
+            <TextView
                 android:id="@+id/tv_ltime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

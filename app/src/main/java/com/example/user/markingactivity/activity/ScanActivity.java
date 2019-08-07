@@ -566,7 +566,8 @@ public class ScanActivity extends AppCompatActivity {
 
     public String getLastUpdateDatetimeFromServer(String uuid) {
         try {
-            JSONArray data = new JSONArray();
+            //TODO
+            JSONArray data = new JSONArray(sp.getLastUpdateDatetimeFromServer(String.valueOf(project_id)));
             for (int i=0; i<data.length(); i++) {
                 if (data.getJSONObject(i).getString("uuid").equals(uuid)) {
                     return data.getJSONObject(i).getString("lastUpdateDatetime");

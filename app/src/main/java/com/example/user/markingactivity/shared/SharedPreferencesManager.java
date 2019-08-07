@@ -188,6 +188,10 @@ public class SharedPreferencesManager {
         }
     }
 
+    public String getLastUpdateDatetimeFromServer(String projectId) {
+        return sp.getString("lastUpdateDatetimeFromServer"+projectId, "None");
+    }
+
     public void saveGetDataFromServerTime(String projectId) {
         sp.edit().putString("getDataFromServerTime"+projectId, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())).commit();
     }
